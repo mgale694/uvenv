@@ -106,8 +106,5 @@ disable_error_code = ["misc"]
 
 # Specific overrides for third-party libraries
 [[tool.mypy.overrides]]
-module = [
-    "typer.*",
-    "rich.*",
-]
+module = ["typer.*", "rich.*"]
 ignore_missing_imports = true

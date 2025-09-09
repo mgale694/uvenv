@@ -1,19 +1,6 @@
 # uvenv
 
-[![CI](https://github.com/mgale694/uvenv/workflows/CI/badge.svg)](https://gi## Commands
-
-| Command                          | Description                                     |
-| -------------------------------- | ----------------------------------------------- | -------------------- |
-| `uvenv python install <version>` | Install a Python version using uv               |
-| `uvenv python list`              | List available and installed Python versions    |
-| `uvenv create <name> <version>`  | Create a new virtual environment                |
-| `uvenv activate <name>`          | Print shell activation snippet                  |
-| `uvenv list`                     | List all virtual environments                   |
-| `uvenv remove <name>`            | Remove a virtual environment                    |
-| `uvenv lock <name>`              | Generate a lockfile for the environment         |
-| `uvenv thaw <name>`              | Rebuild environment from lockfile               |
-| `uvenv shell-integration`        | Install shell integration for direct activation | le694/uvenv/actions) |
-
+[![CI](https://github.com/mgale694/uvenv/workflows/CI/badge.svg)](https://github.com/mgale694/uvenv/actions)
 [![PyPI version](https://badge.fury.io/py/uvenv.svg)](https://badge.fury.io/py/uvenv)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 

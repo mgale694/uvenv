@@ -4,16 +4,40 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from uvenv import __version__
 from uvenv.core.freeze import FreezeManager
 from uvenv.core.manager import EnvironmentManager
 from uvenv.core.python import PythonManager
 
 console = Console()
+
+
+def version_callback(value: bool) -> None:
+    """Handle version option."""
+    if value:
+        console.print(f"uvenv version {__version__}")
+        raise typer.Exit()
+
+
 app = typer.Typer(
     name="uvenv",
     help="A CLI tool for managing Python virtual environments using uv",
     rich_markup_mode="rich",
 )
+
+
+@app.callback()
+def main_callback(
+    _version: bool = typer.Option(
+        False,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show version and exit",
+    ),
+) -> None:
+    """Main callback for global options."""
+
 
 # Initialize managers
 env_manager = EnvironmentManager()
@@ -32,7 +56,7 @@ def python_install(
         console.print(f"[green]✓[/green] Python {version} installed successfully")
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to install Python {version}: {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -51,7 +75,7 @@ def create(
         console.print(f"[green]✓[/green] Environment '{name}' created successfully")
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to create environment '{name}': {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -64,7 +88,7 @@ def activate(
         console.print(activation_script)
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to get activation script for '{name}': {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -90,7 +114,7 @@ def list() -> None:
         console.print(table)
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to list environments: {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -114,7 +138,7 @@ def remove(
         console.print(f"[green]✓[/green] Environment '{name}' removed successfully")
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to remove environment '{name}': {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -128,7 +152,7 @@ def lock(
         console.print(f"[green]✓[/green] Lockfile generated for '{name}'")
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to generate lockfile for '{name}': {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -142,13 +166,8 @@ def thaw(
         console.print(f"[green]✓[/green] Environment '{name}' rebuilt from lockfile")
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to rebuild environment '{name}': {e}")
-        raise typer.Exit(1)
-
-
-def main() -> None:
-    """Main entrypoint for the CLI."""
-    app()
+        raise typer.Exit(1) from None
 
 
 if __name__ == "__main__":
-    main()
+    app()

@@ -1,10 +1,10 @@
 """Lockfile management for uvenv."""
 
-import json
 import subprocess
-import toml
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
+
+import toml
 
 from uvenv.core.paths import PathManager
 
@@ -12,7 +12,7 @@ from uvenv.core.paths import PathManager
 class FreezeManager:
     """Manages environment freezing and thawing via lockfiles."""
 
-    def __init__(self, base_dir: str = None) -> None:
+    def __init__(self, base_dir: str | None = None) -> None:
         """Initialize the freeze manager.
 
         Args:
@@ -91,7 +91,7 @@ class FreezeManager:
 
         try:
             # Read lockfile
-            with open(lockfile_path, "r") as f:
+            with open(lockfile_path) as f:
                 lockfile_data = toml.load(f)
 
             # Verify environment exists
@@ -118,7 +118,7 @@ class FreezeManager:
         except Exception as e:
             raise RuntimeError(f"Failed to restore from lockfile: {e}") from e
 
-    def get_lockfile_info(self, name: str) -> Dict[str, Any]:
+    def get_lockfile_info(self, name: str) -> dict[str, Any]:
         """Get information from a lockfile.
 
         Args:
@@ -136,12 +136,12 @@ class FreezeManager:
             raise RuntimeError(f"No lockfile found for environment '{name}'")
 
         try:
-            with open(lockfile_path, "r") as f:
+            with open(lockfile_path) as f:
                 return toml.load(f)
         except Exception as e:
             raise RuntimeError(f"Failed to read lockfile: {e}") from e
 
-    def _get_platform_info(self) -> Dict[str, str]:
+    def _get_platform_info(self) -> dict[str, str]:
         """Get platform information for lockfile metadata.
 
         Returns:

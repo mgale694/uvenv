@@ -1,5 +1,12 @@
 # uvenv Documentation
 
+## 📚 Documentation Navigation
+
+- **[User Guide](index.md)** - Complete usage documentation (this page)
+- **[Design Principles](principles.md)** - Core principles and architecture decisions
+- **[Roadmap](roadmap.md)** - Future development plans and phases
+- **[Design Document](design.md)** - Technical implementation details
+
 ## Overview
 
 `uvenv` is a CLI tool for managing Python virtual environments using [uv](https://github.com/astral-sh/uv). It provides a simple interface similar to `pyenv-virtualenv` but leverages the speed and efficiency of `uv`.
@@ -261,6 +268,52 @@ end
 2. **Meaningful names**: Use descriptive environment names
 3. **Clean up**: Remove unused environments regularly
 4. **Version pinning**: Use specific Python versions for consistency
+
+## Development
+
+### Setup Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/mgale694/uvenv.git
+cd uvenv
+
+# Install in development mode with dev dependencies
+pip install -e ".[dev]"
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Code Quality
+
+uvenv uses modern Python tooling for code quality:
+
+```bash
+# Format code
+black src/ tests/
+
+# Lint code
+ruff check src/ tests/ --fix
+
+# Type checking
+mypy src/
+
+# Run tests
+pytest tests/
+
+# Run pre-commit on all files
+pre-commit run --all-files
+```
+
+### Pre-commit Hooks
+
+The project includes pre-commit hooks for:
+
+- Code formatting (black)
+- Linting (ruff)
+- Type checking (mypy)
+- Standard checks (trailing whitespace, YAML/TOML validation)
 
 ## Troubleshooting
 

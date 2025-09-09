@@ -157,6 +157,53 @@ black src/ tests/
 mypy src/
 ```
 
+## Documentation
+
+- 📖 [Complete Documentation](docs/index.md) - Comprehensive user guide
+- 🏗️ [Design Principles](docs/principles.md) - Core principles and architecture
+- 🗺️ [Roadmap](docs/roadmap.md) - Future plans and development phases
+- 📐 [Design Document](docs/design.md) - Technical design and implementation details
+
+## Roadmap
+
+uvenv follows a phased development approach:
+
+### ✅ Phase 1: MVP (Complete)
+
+- Core environment management (`create`, `list`, `activate`, `remove`)
+- Python version integration with uv
+- Lockfile support (`lock`, `thaw`) with TOML format
+- Cross-platform shell integration
+- Rich CLI with beautiful output
+
+### 🚀 Phase 2: Enhanced Features (In Progress)
+
+- Advanced shell completions and auto-installation
+- Rich metadata and environment templates
+- Usage analytics and cleanup automation
+- Environment sync and bulk operations
+
+### 🌟 Phase 3: Ecosystem Integration (Planned)
+
+- Homebrew formula and package manager distribution
+- Global hooks with `.uvenv-version` files
+- Project linking and workspace isolation
+- IDE integrations (VS Code, PyCharm)
+
+### 🔗 Phase 4: uv Ecosystem Integration (Future)
+
+- Deep integration with uv project workflows
+- Shared configuration and unified developer experience
+- `uv.lock` linking and project synchronization
+
+### 🦀 Phase 5: Rust Evolution (Consideration)
+
+- Performance optimization with Rust rewrite
+- Static binary distribution
+- Ecosystem alignment with uv's technology stack
+
+See the [full roadmap](docs/roadmap.md) for detailed timelines and features.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

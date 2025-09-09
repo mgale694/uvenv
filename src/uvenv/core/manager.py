@@ -4,8 +4,7 @@ import json
 import shutil
 import subprocess
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from uvenv.core.paths import PathManager
 
@@ -13,7 +12,7 @@ from uvenv.core.paths import PathManager
 class EnvironmentManager:
     """Manages virtual environment creation, listing, and removal."""
 
-    def __init__(self, base_dir: str = None) -> None:
+    def __init__(self, base_dir: str | None = None) -> None:
         """Initialize the environment manager.
 
         Args:
@@ -40,7 +39,7 @@ class EnvironmentManager:
             # Create the environment using uv
             cmd = ["uv", "venv", str(env_path), "--python", python_version]
 
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            _ = subprocess.run(cmd, capture_output=True, text=True, check=True)
 
             # Create metadata file
             self._create_metadata(name, python_version)
@@ -70,7 +69,7 @@ class EnvironmentManager:
         except OSError as e:
             raise RuntimeError(f"Failed to remove environment: {e}") from e
 
-    def list(self) -> List[Dict[str, Any]]:
+    def list(self) -> list[dict[str, Any]]:
         """List all virtual environments.
 
         Returns:
@@ -124,7 +123,7 @@ class EnvironmentManager:
         with open(metadata_path, "w") as f:
             json.dump(metadata, f, indent=2)
 
-    def _get_environment_info(self, name: str) -> Dict[str, Any]:
+    def _get_environment_info(self, name: str) -> dict[str, Any]:
         """Get information about an environment.
 
         Args:
@@ -147,7 +146,7 @@ class EnvironmentManager:
         # Try to load metadata
         if metadata_path.exists():
             try:
-                with open(metadata_path, "r") as f:
+                with open(metadata_path) as f:
                     metadata = json.load(f)
                     info.update(
                         {

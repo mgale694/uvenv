@@ -34,7 +34,10 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```bash
 # Install a Python version
-uvenv python-install 3.11
+uvenv python install 3.11
+
+# List available Python versions
+uvenv python list
 
 # Create a virtual environment
 uvenv create myproject 3.11
@@ -54,15 +57,16 @@ uvenv remove myproject
 
 ## Commands
 
-| Command                          | Description                             |
-| -------------------------------- | --------------------------------------- |
-| `uvenv python-install <version>` | Install a Python version using uv       |
-| `uvenv create <name> <version>`  | Create a new virtual environment        |
-| `uvenv activate <name>`          | Print shell activation snippet          |
-| `uvenv list`                     | List all virtual environments           |
-| `uvenv remove <name>`            | Remove a virtual environment            |
-| `uvenv lock <name>`              | Generate a lockfile for the environment |
-| `uvenv thaw <name>`              | Rebuild environment from lockfile       |
+| Command                          | Description                                  |
+| -------------------------------- | -------------------------------------------- |
+| `uvenv python install <version>` | Install a Python version using uv            |
+| `uvenv python list`              | List available and installed Python versions |
+| `uvenv create <name> <version>`  | Create a new virtual environment             |
+| `uvenv activate <name>`          | Print shell activation snippet               |
+| `uvenv list`                     | List all virtual environments                |
+| `uvenv remove <name>`            | Remove a virtual environment                 |
+| `uvenv lock <name>`              | Generate a lockfile for the environment      |
+| `uvenv thaw <name>`              | Rebuild environment from lockfile            |
 
 ## Environment Storage
 

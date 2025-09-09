@@ -152,7 +152,8 @@ python_implementation = "CPython"
 
 | uvenv command         | uv equivalent                         | Notes                          |
 | --------------------- | ------------------------------------- | ------------------------------ |
-| `python-install 3.11` | `uv python install 3.11`              | Direct wrapper                 |
+| `python install 3.11` | `uv python install 3.11`              | Direct wrapper                 |
+| `python list`         | `uv python list`                      | Enhanced with status table     |
 | `create name 3.11`    | `uv venv ~/.uvenv/name --python 3.11` | Custom path                    |
 | `activate name`       | N/A                                   | Generates shell script         |
 | `list`                | N/A                                   | Custom implementation          |

@@ -29,16 +29,22 @@ pip install uvenv
 ### 1. Install a Python version
 
 ```bash
-uvenv python-install 3.11
+uvenv python install 3.11
 ```
 
-### 2. Create a virtual environment
+### 2. List available Python versions
+
+```bash
+uvenv python list
+```
+
+### 3. Create a virtual environment
 
 ```bash
 uvenv create myproject 3.11
 ```
 
-### 3. Activate the environment
+### 4. Activate the environment
 
 ```bash
 # Get activation command
@@ -51,19 +57,19 @@ source ~/.uvenv/myproject/bin/activate
 eval "$(uvenv activate myproject)"
 ```
 
-### 4. List environments
+### 5. List environments
 
 ```bash
 uvenv list
 ```
 
-### 5. Create a lockfile
+### 6. Create a lockfile
 
 ```bash
 uvenv lock myproject
 ```
 
-### 6. Remove an environment
+### 7. Remove an environment
 
 ```bash
 uvenv remove myproject
@@ -71,7 +77,9 @@ uvenv remove myproject
 
 ## Commands
 
-### `uvenv python-install <version>`
+### Python Version Management
+
+#### `uvenv python install <version>`
 
 Install a Python version using uv.
 
@@ -82,10 +90,38 @@ Install a Python version using uv.
 **Example:**
 
 ```bash
-uvenv python-install 3.11.0
+uvenv python install 3.11.0
 ```
 
-### `uvenv create <name> <python_version>`
+#### `uvenv python list`
+
+List available and installed Python versions.
+
+**Example:**
+
+```bash
+uvenv python list
+```
+
+**Output:**
+
+- Shows a table with version names, installation status, and locations
+- ✓ Installed versions are marked with a checkmark
+- Available versions show as "Available"
+
+#### `uvenv python --help`
+
+Show help for Python version management commands.
+
+**Example:**
+
+```bash
+uvenv python --help
+```
+
+### Environment Management
+
+#### `uvenv create <name> <python_version>`
 
 Create a new virtual environment.
 
@@ -100,7 +136,7 @@ Create a new virtual environment.
 uvenv create myproject 3.11
 ```
 
-### `uvenv activate <name>`
+#### `uvenv activate <name>`
 
 Print shell activation snippet for the environment.
 
@@ -118,7 +154,7 @@ uvenv activate myproject
 eval "$(uvenv activate myproject)"
 ```
 
-### `uvenv list`
+#### `uvenv list`
 
 List all virtual environments.
 
@@ -128,7 +164,7 @@ List all virtual environments.
 uvenv list
 ```
 
-### `uvenv remove <name>`
+#### `uvenv remove <name>`
 
 Remove a virtual environment.
 
@@ -147,7 +183,9 @@ uvenv remove myproject
 uvenv remove myproject --force
 ```
 
-### `uvenv lock <name>`
+### Lockfile Management
+
+#### `uvenv lock <name>`
 
 Generate a lockfile for the environment.
 
@@ -168,7 +206,7 @@ This creates a `uvenv.lock` file in the environment directory containing:
 - Platform information
 - Generation timestamp
 
-### `uvenv thaw <name>`
+#### `uvenv thaw <name>`
 
 Rebuild environment from lockfile.
 
@@ -180,6 +218,68 @@ Rebuild environment from lockfile.
 
 ```bash
 uvenv thaw myproject
+```
+
+## Python Version Workflow Examples
+
+### Installing and Managing Python Versions
+
+```bash
+# Check what Python versions are available
+uvenv python list
+
+# Install a specific Python version
+uvenv python install 3.12.1
+
+# Install multiple versions for different projects
+uvenv python install 3.11.7
+uvenv python install 3.10.13
+
+# List all versions again to see installed ones
+uvenv python list
+```
+
+### Complete Project Setup Workflow
+
+```bash
+# 1. Install the Python version you need
+uvenv python install 3.12.1
+
+# 2. Create a virtual environment for your project
+uvenv create myproject 3.12.1
+
+# 3. Activate the environment
+eval "$(uvenv activate myproject)"
+
+# 4. Install packages in your activated environment
+pip install requests fastapi
+
+# 5. Create a lockfile to save the exact environment state
+uvenv lock myproject
+
+# 6. Later, recreate the environment from the lockfile
+uvenv thaw myproject
+```
+
+### Managing Multiple Projects
+
+```bash
+# Set up environments for different projects
+uvenv python install 3.11.7
+uvenv python install 3.12.1
+
+uvenv create api-project 3.12.1
+uvenv create legacy-project 3.11.7
+
+# See all your environments
+uvenv list
+
+# Switch between projects
+eval "$(uvenv activate api-project)"
+# ... work on api project
+
+eval "$(uvenv activate legacy-project)"
+# ... work on legacy project
 ```
 
 ## Configuration

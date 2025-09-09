@@ -45,8 +45,17 @@ python_manager = PythonManager()
 freeze_manager = FreezeManager()
 
 
-@app.command()
-def python_install(
+# Create Python command group
+python_app = typer.Typer(
+    name="python",
+    help="Manage Python versions",
+    rich_markup_mode="rich",
+)
+app.add_typer(python_app, name="python")
+
+
+@python_app.command()
+def install(
     version: str = typer.Argument(..., help="Python version to install"),
 ) -> None:
     """Install a Python version using uv."""
@@ -56,6 +65,46 @@ def python_install(
         console.print(f"[green]✓[/green] Python {version} installed successfully")
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to install Python {version}: {e}")
+        raise typer.Exit(1) from None
+
+
+@python_app.command(name="list")
+def python_list() -> None:
+    """List available and installed Python versions."""
+    try:
+        # Get installed versions
+        installed = python_manager.list_installed()
+        # Get available versions
+        available = python_manager.list_available()
+
+        if not installed and not available:
+            console.print("[yellow]No Python versions found[/yellow]")
+            return
+
+        table = Table(title="Python Versions")
+        table.add_column("Version", style="cyan")
+        table.add_column("Status", style="green")
+        table.add_column("Location", style="dim")
+
+        # Track which versions we've already shown
+        shown_versions = set()
+
+        # First, show installed versions
+        for version_info in installed:
+            version = version_info.get("version", "unknown")
+            location = version_info.get("executable", "unknown")
+            table.add_row(version, "✓ Installed", location)
+            shown_versions.add(version)
+
+        # Then show available versions that aren't installed
+        for version in available:
+            if version not in shown_versions:
+                table.add_row(version, "Available", "")
+
+        console.print(table)
+
+    except Exception as e:
+        console.print(f"[red]✗[/red] Failed to list Python versions: {e}")
         raise typer.Exit(1) from None
 
 
@@ -91,8 +140,8 @@ def activate(
         raise typer.Exit(1) from None
 
 
-@app.command()
-def list() -> None:
+@app.command(name="list")
+def env_list() -> None:
     """List all virtual environments."""
     try:
         environments = env_manager.list()

@@ -8,6 +8,7 @@ from uvenv import __version__
 from uvenv.core.freeze import FreezeManager
 from uvenv.core.manager import EnvironmentManager
 from uvenv.core.python import PythonManager
+from uvenv.shell.activate import ActivationManager
 
 console = Console()
 
@@ -43,6 +44,35 @@ def main_callback(
 env_manager = EnvironmentManager()
 python_manager = PythonManager()
 freeze_manager = FreezeManager()
+activation_manager = ActivationManager()
+
+
+def complete_environment_names() -> list[str]:
+    """Provide completion for environment names."""
+    try:
+        environments = env_manager.list()
+        return [env.get("name", "") for env in environments if env.get("name")]
+    except Exception:
+        # If there's an error, return empty list to avoid breaking completion
+        return []
+
+
+def complete_python_versions() -> list[str]:
+    """Provide completion for Python versions."""
+    try:
+        # Get installed Python versions
+        installed = python_manager.list_installed()
+        versions = [v.get("version", "") for v in installed if v.get("version")]
+
+        # Add some common versions for convenience
+        common_versions = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+        # Combine and deduplicate
+        all_versions = list(set(versions + common_versions))
+        return sorted(all_versions, reverse=True)
+    except Exception:
+        # Fallback to common versions
+        return ["3.12", "3.11", "3.10", "3.9", "3.8"]
 
 
 # Create Python command group
@@ -112,7 +142,9 @@ def python_list() -> None:
 def create(
     name: str = typer.Argument(..., help="Name of the virtual environment"),
     python_version: str = typer.Argument(
-        ..., help="Python version for the environment"
+        ...,
+        help="Python version for the environment",
+        autocompletion=complete_python_versions,
     ),
 ) -> None:
     """Create a new virtual environment."""
@@ -129,7 +161,11 @@ def create(
 
 @app.command()
 def activate(
-    name: str = typer.Argument(..., help="Name of the virtual environment"),
+    name: str = typer.Argument(
+        ...,
+        help="Name of the virtual environment",
+        autocompletion=complete_environment_names,
+    ),
 ) -> None:
     """Print shell activation snippet for the environment."""
     try:
@@ -168,7 +204,11 @@ def env_list() -> None:
 
 @app.command()
 def remove(
-    name: str = typer.Argument(..., help="Name of the virtual environment"),
+    name: str = typer.Argument(
+        ...,
+        help="Name of the virtual environment",
+        autocompletion=complete_environment_names,
+    ),
     force: bool = typer.Option(
         False, "--force", "-f", help="Force removal without confirmation"
     ),
@@ -192,7 +232,11 @@ def remove(
 
 @app.command()
 def lock(
-    name: str = typer.Argument(..., help="Name of the virtual environment"),
+    name: str = typer.Argument(
+        ...,
+        help="Name of the virtual environment",
+        autocompletion=complete_environment_names,
+    ),
 ) -> None:
     """Generate a lockfile for the environment."""
     console.print(f"[green]Generating lockfile for environment '{name}'...[/green]")
@@ -206,7 +250,11 @@ def lock(
 
 @app.command()
 def thaw(
-    name: str = typer.Argument(..., help="Name of the virtual environment"),
+    name: str = typer.Argument(
+        ...,
+        help="Name of the virtual environment",
+        autocompletion=complete_environment_names,
+    ),
 ) -> None:
     """Rebuild environment from lockfile."""
     console.print(f"[green]Rebuilding environment '{name}' from lockfile...[/green]")
@@ -215,6 +263,59 @@ def thaw(
         console.print(f"[green]✓[/green] Environment '{name}' rebuilt from lockfile")
     except Exception as e:
         console.print(f"[red]✗[/red] Failed to rebuild environment '{name}': {e}")
+        raise typer.Exit(1) from None
+
+
+@app.command()
+def shell_integration(
+    shell: str = typer.Option(
+        None,
+        "--shell",
+        help="Target shell (bash, zsh, fish, powershell). Auto-detected if not "
+        "specified.",
+    ),
+    print_only: bool = typer.Option(
+        False,
+        "--print",
+        help="Print integration script instead of installation instructions",
+    ),
+) -> None:
+    """Install shell integration for uvenv.
+
+    This enables 'uvenv activate <env>' to work directly without eval.
+    """
+    try:
+        integration_script = activation_manager.generate_shell_integration(shell)
+
+        if print_only:
+            console.print(integration_script)
+            return
+
+        detected_shell = activation_manager._detect_shell() if shell is None else shell
+
+        # Show installation instructions
+        console.print(f"[green]Shell integration for {detected_shell}[/green]")
+        console.print(
+            "\n[yellow]Add the following to your shell configuration:[/yellow]"
+        )
+
+        if detected_shell in ("bash", "zsh"):
+            config_file = "~/.bashrc" if detected_shell == "bash" else "~/.zshrc"
+            console.print(f"\n[cyan]# Add to {config_file}[/cyan]")
+        elif detected_shell == "fish":
+            console.print("\n[cyan]# Add to ~/.config/fish/config.fish[/cyan]")
+        elif detected_shell == "powershell":
+            console.print("\n[cyan]# Add to your PowerShell profile[/cyan]")
+
+        console.print(f"\n{integration_script}")
+
+        console.print("\n[green]After adding this and restarting your shell:[/green]")
+        console.print("• [cyan]uvenv activate myenv[/cyan] - Will activate directly")
+        console.print("• [cyan]uvenv list[/cyan] - Works normally")
+        console.print("• [cyan]uvenv python install 3.12[/cyan] - Works normally")
+
+    except Exception as e:
+        console.print(f"[red]✗[/red] Failed to generate shell integration: {e}")
         raise typer.Exit(1) from None
 
 

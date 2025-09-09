@@ -1,6 +1,19 @@
 # uvenv
 
-[![CI](https://github.com/mgale694/uvenv/workflows/CI/badge.svg)](https://github.com/mgale694/uvenv/actions)
+[![CI](https://github.com/mgale694/uvenv/workflows/CI/badge.svg)](https://gi## Commands
+
+| Command                          | Description                                     |
+| -------------------------------- | ----------------------------------------------- | -------------------- |
+| `uvenv python install <version>` | Install a Python version using uv               |
+| `uvenv python list`              | List available and installed Python versions    |
+| `uvenv create <name> <version>`  | Create a new virtual environment                |
+| `uvenv activate <name>`          | Print shell activation snippet                  |
+| `uvenv list`                     | List all virtual environments                   |
+| `uvenv remove <name>`            | Remove a virtual environment                    |
+| `uvenv lock <name>`              | Generate a lockfile for the environment         |
+| `uvenv thaw <name>`              | Rebuild environment from lockfile               |
+| `uvenv shell-integration`        | Install shell integration for direct activation | le694/uvenv/actions) |
+
 [![PyPI version](https://badge.fury.io/py/uvenv.svg)](https://badge.fury.io/py/uvenv)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -33,6 +46,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ### Basic Usage
 
 ```bash
+# Install shell integration (one-time setup)
+uvenv shell-integration >> ~/.zshrc && source ~/.zshrc
+
 # Install a Python version
 uvenv python install 3.11
 
@@ -42,8 +58,8 @@ uvenv python list
 # Create a virtual environment
 uvenv create myproject 3.11
 
-# Activate the environment
-eval "$(uvenv activate myproject)"
+# Activate the environment (with shell integration)
+uvenv activate myproject
 
 # List environments
 uvenv list
@@ -55,18 +71,52 @@ uvenv lock myproject
 uvenv remove myproject
 ```
 
+## Understanding Environment Activation
+
+There are two ways to work with uvenv activation:
+
+### Method 1: Direct Evaluation (Recommended)
+
+```bash
+eval "$(uvenv activate myproject)"
+```
+
+This **actually activates** the environment in your current shell session. The `eval` command executes the activation script that `uvenv activate` outputs.
+
+### Method 2: Manual Activation
+
+```bash
+uvenv activate myproject
+# Outputs: source /Users/username/.uvenv/myproject/bin/activate
+
+# Then manually run the output:
+source /Users/username/.uvenv/myproject/bin/activate
+```
+
+This **just shows** the activation command. You need to copy and run the output manually.
+
+**Why use `eval`?**
+
+- ✅ Activates the environment immediately
+- ✅ Works in scripts and automation
+- ✅ Single command instead of two steps
+- ✅ No copy-pasting required
+
 ## Commands
 
-| Command                          | Description                                  |
-| -------------------------------- | -------------------------------------------- |
-| `uvenv python install <version>` | Install a Python version using uv            |
-| `uvenv python list`              | List available and installed Python versions |
-| `uvenv create <name> <version>`  | Create a new virtual environment             |
-| `uvenv activate <name>`          | Print shell activation snippet               |
-| `uvenv list`                     | List all virtual environments                |
-| `uvenv remove <name>`            | Remove a virtual environment                 |
-| `uvenv lock <name>`              | Generate a lockfile for the environment      |
-| `uvenv thaw <name>`              | Rebuild environment from lockfile            |
+| Command                          | Description                                     |
+| -------------------------------- | ----------------------------------------------- |
+| `uvenv python install <version>` | Install a Python version using uv               |
+| `uvenv python list`              | List available and installed Python versions    |
+| `uvenv create <name> <version>`  | Create a new virtual environment                |
+| `uvenv activate <name>`          | Print shell activation snippet                  |
+| `uvenv list`                     | List all virtual environments                   |
+| `uvenv remove <name>`            | Remove a virtual environment                    |
+| `uvenv lock <name>`              | Generate a lockfile for the environment         |
+| `uvenv thaw <name>`              | Rebuild environment from lockfile               |
+| `uvenv shell-integration`        | Install shell integration for direct activation |
+| `uvenv --install-completion`     | Install tab completion for your shell           |
+| `uvenv --show-completion`        | Show completion script for manual installation  |
 
 ## Environment Storage
 
@@ -85,7 +135,32 @@ Virtual environments are stored in `~/.uvenv/`:
 
 ## Shell Integration
 
+### Option 1: Built-in Shell Integration (Recommended)
+
+Install uvenv's shell integration to make `uvenv activate` work directly:
+
+```bash
+# Add shell integration to your shell config
+uvenv shell-integration >> ~/.zshrc  # for zsh
+uvenv shell-integration >> ~/.bashrc # for bash
+
+# Restart your shell or source the config
+source ~/.zshrc
+```
+
+**After installation, you can use:**
+
+```bash
+uvenv activate myproject    # No eval needed!
+uvenv list                  # Works normally
+uvenv python install 3.12  # Works normally
+```
+
+### Option 2: Manual Shell Functions
+
 Add to your shell config for easier activation:
+
+> **Note:** These functions use `eval "$(uvenv activate ...)"` to actually activate the environment, not just print the activation command.
 
 ### Bash/Zsh
 
@@ -112,6 +187,39 @@ function uvactivate
     eval (uvenv activate $argv[1])
 end
 ```
+
+## Shell Completion
+
+uvenv supports tab completion for commands and arguments:
+
+### Auto-Install Completion
+
+```bash
+# Install completion for your current shell
+uvenv --install-completion
+
+# Restart your terminal or source your shell config
+```
+
+### Manual Installation
+
+If auto-install doesn't work, you can manually add completion:
+
+```bash
+# Show the completion script for your shell
+uvenv --show-completion
+
+# Add it to your shell config manually
+uvenv --show-completion >> ~/.zshrc      # for zsh
+uvenv --show-completion >> ~/.bashrc     # for bash
+```
+
+**What you get with completion:**
+
+- ✅ Command completion (`uvenv <TAB>` shows available commands)
+- ✅ Subcommand completion (`uvenv python <TAB>` shows `install`, `list`)
+- ✅ Environment name completion (`uvenv activate <TAB>` shows your environments)
+- ✅ Option completion (`uvenv --<TAB>` shows available options)
 
 ## Lockfile Format
 

@@ -26,50 +26,62 @@ pip install uvenv
 
 ## Quick Start
 
-### 1. Install a Python version
+### 1. Install shell integration (optional but recommended)
+
+```bash
+# Install shell integration for direct activation
+uvenv shell-integration >> ~/.zshrc  # for zsh
+uvenv shell-integration >> ~/.bashrc # for bash
+
+# Restart your shell or source the config
+source ~/.zshrc
+```
+
+### 2. Install a Python version
 
 ```bash
 uvenv python install 3.11
 ```
 
-### 2. List available Python versions
+### 3. List available Python versions
 
 ```bash
 uvenv python list
 ```
 
-### 3. Create a virtual environment
+### 4. Create a virtual environment
 
 ```bash
 uvenv create myproject 3.11
 ```
 
-### 4. Activate the environment
+### 5. Activate the environment
+
+**With shell integration (recommended):**
 
 ```bash
-# Get activation command
 uvenv activate myproject
+```
 
-# For bash/zsh
-source ~/.uvenv/myproject/bin/activate
+**Without shell integration:**
 
-# Or use eval
+```bash
 eval "$(uvenv activate myproject)"
 ```
 
-### 5. List environments
+### 6. List environments
 
 ```bash
 uvenv list
 ```
 
-### 6. Create a lockfile
+### 7. Create a lockfile
 
 ```bash
 uvenv lock myproject
 ```
 
-### 7. Remove an environment
+### 8. Remove an environment
 
 ```bash
 uvenv remove myproject
@@ -144,14 +156,47 @@ Print shell activation snippet for the environment.
 
 - `name`: Name of the virtual environment
 
-**Example:**
+**How it works:**
+
+The `uvenv activate` command doesn't directly activate the environment. Instead, it outputs the shell command needed to activate it. You have two options:
+
+**Option 1: Use with `eval` (Recommended)**
 
 ```bash
-# Print activation command
-uvenv activate myproject
-
-# Use with eval
 eval "$(uvenv activate myproject)"
+```
+
+This executes the activation command immediately and activates the environment in your current shell.
+
+**Option 2: Manual execution**
+
+```bash
+# First, see what command to run:
+uvenv activate myproject
+# Output: source /Users/username/.uvenv/myproject/bin/activate
+
+# Then manually execute the output:
+source /Users/username/.uvenv/myproject/bin/activate
+```
+
+**Why use `eval`?**
+
+- ✅ Immediately activates the environment
+- ✅ Works in shell functions and scripts
+- ✅ Single command instead of two steps
+- ✅ Consistent across different shells
+
+**Example comparison:**
+
+```bash
+# Without eval - just shows the command:
+$ uvenv activate myproject
+source /Users/mgale/.uvenv/myproject/bin/activate
+
+# With eval - actually activates:
+$ eval "$(uvenv activate myproject)"
+(myproject) $ echo $VIRTUAL_ENV
+/Users/mgale/.uvenv/myproject
 ```
 
 #### `uvenv list`
@@ -220,6 +265,41 @@ Rebuild environment from lockfile.
 uvenv thaw myproject
 ```
 
+### Shell Integration
+
+#### `uvenv shell-integration`
+
+Generate and install shell integration for uvenv.
+
+This creates a shell function that wraps the `uvenv` command to handle activation automatically without requiring `eval`.
+
+**Options:**
+
+- `--shell`: Target shell (bash, zsh, fish, powershell). Auto-detected if not specified
+- `--print`: Print integration script instead of installation instructions
+
+**Examples:**
+
+```bash
+# Show installation instructions for your shell
+uvenv shell-integration
+
+# Install directly to your shell config
+uvenv shell-integration --print >> ~/.zshrc
+
+# Generate for a specific shell
+uvenv shell-integration --shell bash
+
+# Just print the script
+uvenv shell-integration --print
+```
+
+**After installation:**
+
+- `uvenv activate myenv` - Works directly without eval
+- All other commands work normally
+- Requires restarting your shell or sourcing the config
+
 ## Python Version Workflow Examples
 
 ### Installing and Managing Python Versions
@@ -242,6 +322,9 @@ uvenv python list
 ### Complete Project Setup Workflow
 
 ```bash
+# 0. Optional: Install shell integration (one-time setup)
+uvenv shell-integration >> ~/.zshrc && source ~/.zshrc
+
 # 1. Install the Python version you need
 uvenv python install 3.12.1
 
@@ -249,7 +332,10 @@ uvenv python install 3.12.1
 uvenv create myproject 3.12.1
 
 # 3. Activate the environment
-eval "$(uvenv activate myproject)"
+# With shell integration:
+uvenv activate myproject
+# Without shell integration:
+# eval "$(uvenv activate myproject)"
 
 # 4. Install packages in your activated environment
 pip install requests fastapi
@@ -275,10 +361,11 @@ uvenv create legacy-project 3.11.7
 uvenv list
 
 # Switch between projects
-eval "$(uvenv activate api-project)"
+# With shell integration:
+uvenv activate api-project
 # ... work on api project
 
-eval "$(uvenv activate legacy-project)"
+uvenv activate legacy-project
 # ... work on legacy project
 ```
 
